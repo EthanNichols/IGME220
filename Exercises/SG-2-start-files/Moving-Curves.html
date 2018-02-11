@@ -1,0 +1,96 @@
+<html>
+<head>
+	<!--
+		A canvas example from:
+		https://developer.apple.com/library/safari/documentation/AudioVideo/Conceptual/HTML-canvas-guide/DrawingLinesandShapes/DrawingLinesandShapes.html
+		Their coding style is different from what we'll be using in class - use our style, not theirs.
+	-->
+    <title>Simple curve example</title>
+    <style>
+		canvas{
+			background: #ffffff;
+			cursor: pointer;
+			margin-left: 10px;
+			margin-top: 10px;
+			box-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+		}
+ 	</style>
+    <script type="text/javascript">
+        var canvas, ctx;
+ 
+        let ctrlX, ctrlY, speed, offsetY, offsetX, vector;
+        
+        function getRandomUnitVector(){
+		var x = Math.random() - .5;
+		var y = Math.random() - .5;
+		var length = Math.sqrt(x*x + y*y);
+		if(length == 0){ // very unlikely
+			x=1; // point right
+			y=0;
+			length=1;
+		} else{
+			x /= length;
+			y /= length;
+		}
+		
+		return {x:x, y:y};
+	}
+        
+	function init() {
+		canvas = document.querySelector("canvas");
+		ctx = canvas.getContext("2d");
+        
+        ctrlX = 5;
+        ctrlY = 150;
+        
+        speed = 5;
+        
+        vector = getRandomUnitVector();
+        
+		drawCurves();
+        
+        loop();
+	}
+        
+    function loop() {
+        window.requestAnimationFrame(loop);
+        
+        ctrlX += vector.x * speed;
+        ctrlY += vector.y * speed;
+        
+        console.log(vector);
+        
+        if (ctrlX < 0 || ctrlX > 600) {vector.x *= -1;}
+        if (ctrlY < 0 || ctrlY > 400) {vector.y *= -1;}
+
+
+        ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+        ctx.fillRect(0, 0, 600, 400);
+        
+        drawCurves();
+    }
+ 
+   function drawCurves() {
+   	ctx.lineWidth="3";
+    ctx.strokeStyle = "black";
+    var ctrlXa = 50;
+    var ctrlYa = 300;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(ctrlX, ctrlY, canvas.width, canvas.height);
+    ctx.stroke();
+    
+    ctx.strokeStyle = "red";
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.bezierCurveTo(ctrlX, ctrlY, ctrlXa, ctrlYa, canvas.width, canvas.height);
+    ctx.stroke();
+}
+
+    </script>
+</head>
+<body onload="init()" style="background-color:#e0e0e0">
+    <canvas height="400" width="600">
+    </canvas>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Canvas 1</title>
+	<style type="text/css">
+	body{
+		background: #dddddd;
+ 	}
+
+	canvas{
+		background: #ffffff;
+		cursor: pointer;
+		margin-left: 10px;
+		margin-top: 10px;
+		box-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+ 	}
+	
+	</style>
+	
+	<script>
+		"use strict";
+		// #1 - wait for page to load
+		window.onload = init; 
+		
+		function init(){
+			console.log("init() called");
+			// #2 - get pointer to <canvas> element on page
+			var canvas = document.querySelector('canvas');
+			
+			// #3 - get pointer to "drawing context" and drawing API
+			var ctx = canvas.getContext('2d');
+            
+			/* #4 - start drawing! */
+            
+            ///This is the code for section 3 in the SG-doc
+            /*
+            //Black filled 50*50 square
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, 50, 50);
+            
+            //Purple filled 50*50 square
+            ctx.fillStyle = "purple";
+            ctx.fillRect(300, 300, 50, 50);
+            
+            //Purple stroke fille 50*50 square
+            ctx.strokeStyle = "purple";
+            ctx.strokeRect(300, 300, 50, 50);
+            
+            //5 pixel thick green line
+            ctx.strokeStyle = "green";
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.moveTo(0, 100);
+            ctx.lineTo(100, 500);
+            ctx.closePath();
+            ctx.stroke();
+			
+            //Black filled 50 radius circle
+            ctx.fillStyle = "black";
+            ctx.beginPath();
+            ctx.arc(0, 0, 50, Math.PI * 2, false);
+            ctx.closePath();
+            ctx.fill();
+            
+            //Yellow filled 50 radius semi-circle
+            ctx.fillStyle = "yellow";
+            ctx.beginPath();
+            ctx.arc(200, 200, 100, Math.PI, false);
+            ctx.closePath();
+            ctx.fill();
+            */
+            
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 5;
+            
+            //Horizon
+            ctx.beginPath();
+            ctx.moveTo(0, 350);
+            ctx.lineTo(750, 350);
+            ctx.closePath();
+            ctx.stroke();
+            
+            ctx.fillStyle = "#55ba55"
+            ctx.fillRect(0, 352, 750, 300);
+            
+            ctx.fillStyle = "#81d6d9"
+            ctx.fillRect(0, 0, 750, 348);
+            
+            for (let i=0; i<10; i++) {
+                CreateTree(ctx);
+            }
+            
+            ctx.lineWidth = 5;
+            ctx.fillStyle = "yellow";
+            ctx.strokeStyle = "black";
+            //Head
+            ctx.beginPath();
+            ctx.arc(375, 250, 200, 0, Math.PI*2, false); 
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            //Mouth
+            ctx.fillStyle = "black";
+            ctx.beginPath();
+            ctx.arc(375, 400, 75, Math.PI, false);
+            ctx.closePath();
+            ctx.fill();
+            
+            //Left eye
+            ctx.beginPath();
+            ctx.arc(300, 300, 30, Math.PI * 2, false);
+            ctx.closePath();
+            ctx.fill();
+            
+            //Right eye
+            ctx.beginPath();
+            ctx.arc(450, 300, 30, Math.PI * 2, false);
+            ctx.closePath();
+            ctx.fill();
+            
+            //Left eye brow
+            ctx.beginPath();
+            ctx.moveTo(275, 250);
+            ctx.lineTo(350, 300);
+            ctx.closePath();
+            ctx.stroke();
+            
+            //Right eye brow
+            ctx.beginPath();
+            ctx.moveTo(475, 250);
+            ctx.lineTo(400, 300);
+            ctx.closePath();
+            ctx.stroke();
+		}
+        
+        function CreateTree(ctx) {
+            let x = Math.random() * 750;
+            let y = Math.random() * 100 + 200;
+            let width = Math.random() * 50 + 20;
+            let height = Math.random() * 100 + 50;
+            
+            ctx.fillStyle = "#37571b";
+            ctx.strokeStyle = "#284112"
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x + width / 2, y + height);
+            ctx.lineTo(x - width / 2, y + height);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            ctx.strokeStyle = "#89623a";
+            ctx.lineWidth = width / 10;
+            ctx.beginPath();
+            ctx.moveTo(x, y + height);
+            
+            let y2 = Math.random() * 100 + y + height;
+            if (y2 < 350) {
+                y2 = 350;
+            }
+            
+            ctx.lineTo(x, y2);
+            ctx.stroke();
+        }
+		
+		console.log("In bottom of <script> tag!");
+	</script>
+	
+</head>
+<body>
+	<canvas width="750" height="500">
+         Get a browser that supports Canvas!
+         <!-- The user will only see the above text if their browser is older and doesn't support <canvas> -->
+	
+      </canvas>
+</body>
+</html>

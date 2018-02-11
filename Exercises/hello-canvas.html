@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Template</title>
+	<style type="text/css">
+        #fontLoader {
+            height: 0;
+            width: 0;
+            overflow: hidden;
+        }
+        #indie {
+            font-family: "Indie Flower", cursive;
+        }
+        #lobster {
+            font-family: "Lobster", cursive;
+        }
+        
+	canvas{
+		border:1px solid gray;
+        }
+	</style>
+  <link href="https://fonts.googleapis.com/css?family=Indie+Flower" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
+	<script>
+		// #0 - In this course we will always use ECMAScript 5's "strict" mode
+		// See what 'use strict' does here:
+		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions_and_function_scope/Strict_mode
+		'use strict';
+		
+		// #1 call the init function after the pages loads
+		// this is called an "event handler"
+		window.onload = init;
+	
+		function init(){
+			// #2 Now that the page has loaded, start drawing!
+			console.log('init called');
+			
+			// A - canvas variable points at <canvas> tag
+            let canvas = document.querySelector("canvas");
+			
+			// B - the ctx variable points at a "2D drawing context"
+			let ctx = canvas.getContext('2d');
+    
+			// C - all fill operations are now in yellow
+			ctx.fillStyle = '#868e8d';
+			
+			// D - fill a rectangle with the current fill color
+			ctx.fillRect(0, 0, 640, 480);
+            
+            setInterval(function() {DrawFront(ctx)}, 1);
+            setInterval(function() {DrawBack('#7ae3dc', ctx)}, 10);
+            
+		}
+        
+        function DrawBack(color, ctx) {
+            color += "09";
+            ctx.fillStyle = color;
+            
+            let scale = Math.random();
+            ctx.fillRect(Math.random() * 640 - 50 * scale, Math.random() * 480 - 50 * scale, 100 * scale, 100 * scale);
+        }
+        
+        function DrawFront(ctx) {
+            ctx.fillStyle = '#868e8d'
+            ctx.lineWidth = 3;
+            
+            ctx.beginPath();
+            ctx.moveTo(0, 110);
+            ctx.lineTo(640, 110);
+            ctx.lineTo(320, 480);
+            ctx.closePath();
+            
+            ctx.fill();
+			
+			// E - set the current font
+			ctx.font = 'bold 60pt lobster';
+			
+			// F - change the current fill color
+			ctx.fillStyle = '#417773';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.save();
+			
+			// G - draw and fill text using current fill color
+			ctx.fillText('Ethan Nichols', 320, 240);
+            
+            
+            ctx.shadowColor = "#ffffff";
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            ctx.shadowBlur = 30;
+            ctx.font = 'bold 20pt Verdana';
+            ctx.fillStyle = '#000000';
+			ctx.fillText('IGM', 320, 290);
+
+            ctx.restore();
+            ctx.fillRect(40, 215, 50, 50);
+            ctx.fillRect(545, 215, 50, 50);
+            
+            
+            ctx.strokeStyle = '#868e8d'
+            ctx.lineWidth = 7;
+            
+            ctx.beginPath();
+            ctx.moveTo(0, 100);
+            ctx.lineTo(640, 100);
+            ctx.closePath();
+            ctx.stroke();
+        }
+	</script>
+</head>
+<body>
+	<canvas width="640" height="480">
+		Get a real browser!
+		<!-- The user will only see the above text if their browser is older and doesn't support <canvas> -->
+	</canvas>
+    
+    <div id="fontLoader">
+        <p id="indie">IndieFont</p>
+        <p id="lobster">LobsterFont</p>
+    </div>
+</body>
+</html>

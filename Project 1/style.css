@@ -23,6 +23,7 @@ body {
     height: 100%;
     
     pointer-events: none;
+    display: none;
 }
 
 #minimizeOptions {
@@ -50,4 +51,8 @@ body {
     
     background-color: white;
     border: 1px solid black;
+}
+
+#controls div {
+    padding: 2px;
 }

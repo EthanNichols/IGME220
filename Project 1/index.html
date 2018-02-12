@@ -5,8 +5,13 @@
         <meta charset="utf-8" />
         <title>Web Audio Visualizer</title>
         
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        
         <link rel="stylesheet" type="text/css" href="style.css"/>
         <script src="main.js"></script>
+        
+        <link rel="stylesheet" type="text/css" href="Spectrum/spectrum.css"/>
+        <script src="Spectrum/spectrum.js"></script>
     </head>
     
     <body>
@@ -25,10 +30,20 @@
                         <option value="media/New Adventure Theme.mp3">New Adventure Theme</option>
                         <option value="media/Peanuts Theme.mp3">Peanuts Theme</option>
                         <option value="media/The Picard Song.mp3">The Picard Song</option>
+                        <option value="media/Kuni.mp3">Houseki no Kuni</option>
+                        <option value="media/Singularity.mp3">Singularity</option>
+                        <option value="media/Fuck.mp3">Go Fuck Yourself</option>
                     </select>
                 </label>
             </div>
-            <audio controls loop ></audio>
+            
+            <div>Background Color: <input type="text" id="bgColor" class="colorSelector"/></div>
+            
+            <div>Visualizer Color: <input type="text" id="visColor" class="colorSelector"/>
+                <input type="text" id="visColor1" class="colorSelector" value="FFF"/>
+                <input type="checkbox" id="visGradient"/>Gradient</div>
+            
+            <div><audio controls loop ></audio></div>
         </div>
     </body>
 </html>

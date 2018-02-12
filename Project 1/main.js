@@ -1,27 +1,27 @@
 "use strict";
 //Constants
-const NUM_SMAPLE = 256;
+const NUM_SMAPLE = 512;
 
 //Canvas variables
 let bottomCanvas, topCanvas, bottomCtx, topCtx;
+let bgColor, visColor;
 
-let analyserNode;
+let analyserNode, dataCount;
 
 ///Start function to setup elements and functions
 function start() {
     
+    //Set the default values for colors and the data count
+    dataCount = 0;
+    bgColor = "#000000";
+    visColor = "#FFFFFF";
+    
     //Get and set element information
     SetupCanvases();
     GetElements();
+    SetSpectrumInputs();
     
-    //TEMP
-    bottomCtx.globalAlpha = .5;
-    bottomCtx.fillStyle = "black";
-    bottomCtx.fillRect(0, 0, bottomCanvas.width, bottomCanvas.height);
-    topCtx.globalAlpha = .5;
-    topCtx.fillStyle = "white";
-    topCtx.fillRect(0, 0, topCanvas.width, topCanvas.height);
-    
+    //Get the audio information
     analyserNode = CreateWebAudioContent();
     
     //Start the loop
@@ -37,6 +37,13 @@ function GetElements() {
     //Add an onchange element to change the song that is playing
     document.querySelector("#trackSelect").onchange = PlaySong;
     document.querySelector("#trackSelect").value = "";
+    
+    //Add an event to change the background color
+    document.querySelector("#bgColor").move = function(e) { bgColor = $(this).spectrum("get").toHexString(); }
+    
+    //Add events to both visualizer colors to change the color
+    document.querySelector("#visColor").move = DisplayColorVisual;
+    document.querySelector("#visColor1").move = DisplayColorVisual;
 }
 
 ///Setup the top and bottom canvases
@@ -54,6 +61,17 @@ function SetupCanvases() {
     bottomCanvas.height = window.innerHeight;
     topCanvas.width = bottomCanvas.width;
     topCanvas.height = bottomCanvas.height;
+}
+
+///Set the startup information for the color selectors
+function SetSpectrumInputs() {
+    $(".colorSelector").spectrum({
+        color: visColor
+    });
+    
+    $("#bgColor").spectrum({
+       color: bgColor 
+    });
 }
 
 ///Allow the options display to be minimized/re-opend
@@ -92,6 +110,34 @@ function DisplayOptions() {
     }
 }
 
+///Set the color(s) for the audio visualizer
+function DisplayColorVisual() {
+    
+    //Test if the gradient effect is checked
+    if (!document.querySelector("#visGradient").checked) {
+        
+        //Set the color of both color selectors to the same color
+        $(document.querySelector("#visColor")).spectrum("set", $(this).spectrum("get").toHexString());
+        $(document.querySelector("#visColor1")).spectrum("set", $(this).spectrum("get").toHexString());
+        
+        //Set the audio visualizer color
+        visColor = $(this).spectrum("get").toHexString();
+        return;
+    }
+    
+    //Get the two different colors to make a gradient
+    let color1 = $(document.querySelector("#visColor")).spectrum("get").toHexString();
+    let color2 = $(document.querySelector("#visColor1")).spectrum("get").toHexString();
+    
+    //Create the gradient with the two colors
+    let grd = bottomCtx.createLinearGradient(0, bottomCanvas.height / 2, bottomCanvas.width, bottomCanvas.height / 2);
+    grd.addColorStop(0, color1);
+    grd.addColorStop(1, color2);
+    
+    //Set the audio visualizer color
+    visColor = grd;
+}
+
 ///Change the song that's playing in the audio element
 function PlaySong() {
     //Get the audio player
@@ -124,25 +170,38 @@ function CreateWebAudioContent() {
     return analyserNode;
 }
 
-///Loop 
+///Program loop and audio draw call
 function Loop() {
     requestAnimationFrame(Loop);
     
-    let barwidth = 5;
-    let barSpacing = 2;
-    let barHeight = 100;
-    let topSpacing = 50;
-    
-    bottomCtx.clearRect(0, 0, bottomCanvas.width, bottomCanvas.height)
+    //Clear the canvas with the background color
+    bottomCtx.fillStyle = bgColor;
+    bottomCtx.fillRect(0, 0, bottomCanvas.width, bottomCanvas.height)
     
     //Create a new array of intigers and set the data
     let data = new Uint8Array(NUM_SMAPLE / 2);
     analyserNode.getByteFrequencyData(data);
     
-    for (let i=0; i<data.length; i++) {
-        bottomCtx.fillStyle = "red";
+    //Filter out data that is not changing
+    data = data.filter(function(e) { return e !== 0; });
+    
+    //Only display data that is being changed on the screen
+    if (data.length > dataCount) { dataCount += Math.abs(dataCount - data.length) * .1; }
+    else if (data.length == 0) {dataCount = 0;}
+    else { dataCount -= Math.abs(dataCount - data.length) * .1; }
+    
+    //Loop through the data
+    for (let i=0; i<dataCount; i++) {
         
-        bottomCtx.fillRect((topCanvas.width / 128) * (i + .25), topCanvas.height / 2 - (window.innerHeight * (data[i] / 256)) / 2, topCanvas.width / 256,  window.innerHeight * (data[i] / 256));
+        //Set the audio visualizer color
+        bottomCtx.fillStyle = visColor;
+        
+        //Calculate the width and the height of the bars
+        let barWidth = bottomCanvas.width / (dataCount * 1.5);
+        let barHeight = bottomCanvas.height / 2 * (data[i] / (NUM_SMAPLE / 2));
+        
+        //Display the bars
+        bottomCtx.fillRect((barWidth * 1.5) * i, bottomCanvas.height / 2 - barHeight / 2, barWidth, barHeight)
     }
 }
 

@@ -5,6 +5,8 @@
         <meta charset="utf-8" />
         <title>Web Audio Visualizer</title>
         
+        <link href="https://fonts.googleapis.com/css?family=Bellefair" rel="stylesheet">
+        
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         
         <link rel="stylesheet" type="text/css" href="style.css"/>
@@ -25,14 +27,23 @@
             </div>
             
             <div>
+                <label>Audio Visual:
+                    <select id="visualDisplay">
+                        <option value="frequency">Frequency</option>
+                        <option value="waveform">Waveform</option>
+                    </select>
+                </label>
+            </div>
+            
+            <div>
                 <label>Track:
                     <select id="trackSelect">
                         <option value="media/New Adventure Theme.mp3">New Adventure Theme</option>
                         <option value="media/Peanuts Theme.mp3">Peanuts Theme</option>
                         <option value="media/The Picard Song.mp3">The Picard Song</option>
-                        <option value="media/Kuni.mp3">Houseki no Kuni</option>
+                        <option value="media/Virtual Ghost.mp3">Virtual Ghost</option>
                         <option value="media/Singularity.mp3">Singularity</option>
-                        <option value="media/Fuck.mp3">Go Fuck Yourself</option>
+                        <option value="media/Go Fck Yourself.mp3">Go F*ck Yourself</option>
                     </select>
                 </label>
             </div>
@@ -41,9 +52,35 @@
             
             <div>Visualizer Color: <input type="text" id="visColor" class="colorSelector"/>
                 <input type="text" id="visColor1" class="colorSelector" value="FFF"/>
-                <input type="checkbox" id="visGradient"/>Gradient</div>
+                <div>
+                    <span><input type="checkbox" id="visGradient">Gradient</span>
+                    <span><input type="checkbox" id="randomColors">Auto Change Color</span>
+                </div>
+            </div>
             
-            <div><audio controls loop ></audio></div>
+            <div><span>Clear Rate: 1.0</span><input type="range" min="0", max="10", value="10" id="globalValue" class="range"/></div>
+            <div>
+                <label>Display Shape
+                    <select id="displayShape">
+                        <option value="rect">Rectangles</option>
+                        <option value="circle">Circles</option>
+                        <option value="curve">Bezier Curves</option>
+                        <option value="line">Connected Outline</option>
+                        <option value="outsideLines">OutSide Lines</option>
+                        <option value="horizontalLines">Horizontal Lines</option>
+                    </select>
+                </label>
+                
+                <span><input type="checkbox" id="shapeBorder">Border</span>
+            </div>
+            
+            <div><span>LowPass Filter: 440</span><input type="range" min="0", max="1000", value="440" id="audioFilter" class="range"/></div>
+            
+            <div>
+                <span>Larger windows lag!</span>
+                <span><input id="noise" type="checkBox">Noise</span>
+                <span><input id="grey" type="checkBox">Grey Scale</span></div>
+            <div><audio controls ></audio></div>
         </div>
     </body>
 </html>

@@ -7,6 +7,8 @@ body {
     overflow: hidden;
     
     background-color: black;
+    
+    font-family: 'Bellefair', serif;
 }
 
 #bottomCanvas {
@@ -55,4 +57,9 @@ body {
 
 #controls div {
     padding: 2px;
+}
+
+.range {
+    right: 0px;
+    position: absolute;
 }

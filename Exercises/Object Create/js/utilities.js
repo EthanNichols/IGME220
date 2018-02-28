@@ -1,3 +1,6 @@
+export {getRandomUnitVector};
+export {getRandom};
+
 "use strict";
 // these 2 helpers are used by classes.js
 function getRandomUnitVector(){

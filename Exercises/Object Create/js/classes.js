@@ -1,3 +1,10 @@
+export {createCircleSprites};
+export {createImageSprites};
+export {createSquareSprites};
+export {createSquareSpritesWrap};
+
+import {getRandomUnitVector, getRandom} from "./utilities.js";
+
 "use strict";
 let sprite = {
 		// properties

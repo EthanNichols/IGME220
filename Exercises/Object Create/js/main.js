@@ -1,3 +1,5 @@
+import {createCircleSprites, createImageSprites, createSquareSprites, createSquareSpritesWrap} from "./classes.js"
+
 "use strict";
 // these variables are in "Script scope" and will be available in this and other .js files
 const ctx = document.querySelector("canvas").getContext("2d");

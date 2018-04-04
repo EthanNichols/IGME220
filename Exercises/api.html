@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+ 	<title>Get Joke -  DOM Injection Version</title>
+ 	<link href='https://fonts.googleapis.com/css?family=Audiowide' rel='stylesheet' type='text/css'>
+ 	<style>
+ 	*{
+ 		font-family:sans-serif;
+ 	}
+ 	
+ 	header{
+ 		background-color: crimson;
+ 		margin:0;
+ 		padding-left:5px;
+ 	}
+ 	
+ 	h1{
+ 		font-size:4.5em;
+ 		font-family: "Audiowide";
+ 		margin-top:0;
+ 		margin-bottom:0;
+ 		color:black;
+ 		letter-spacing:.025em;
+ 	}
+ 	
+ 	h2{
+ 		font-size:1.5em;
+ 		font-family: "Audiowide";
+ 		margin-top:0;
+ 		color:#eee;
+ 		letter-spacing:.04em;
+ 		white-space: nowrap;
+ 	}
+ 	
+ 	section>div{
+ 		background-color:#ccc;
+ 		margin:1em;
+ 		padding:.5em;
+ 	}
+ 	</style>
+
+  <script>
+  	"use strict";
+	const URL = "https://itunes.apple.com/search?";
+	
+	window.onload = init;
+	
+	function init(){
+		document.querySelector("#submit").onclick = search;
+	}
+	
+	// MY FUNCTIONS
+	function search(){
+		// build url
+		let url = URL;
+        url += "term=" + document.querySelector("#search").value;
+        url += "&country=us" + "&callback=jsonLoaded";
+        
+        while(url.includes(' '))
+            url = url.replace(' ', "%20");
+		
+		
+		// create <script> element and add to page
+		let script = document.createElement('script');
+		script.setAttribute('src',url);
+		script.setAttribute('id','tempScript');
+		document.querySelector('head').appendChild(script);
+	
+		console.log("loading: " + url);
+	}
+	
+
+	function jsonLoaded(obj){
+		console.log("obj stringified = " + JSON.stringify(obj));
+		
+		// TODO: get rid of <script> tag we made for this request
+		let scriptTag = document.querySelector('#tempScript');
+		document.querySelector('head').removeChild(scriptTag);
+        
+        let jsonString = JSON.parse(JSON.stringify(obj));
+        let results = jsonString.results;
+        
+        if (results.length > 0)
+            document.querySelector("#content").innerHTML = "";
+        
+        for (let i=0; i<results.length; i++) {
+            let q = results[i].artistName;
+            let a = results[i].trackName;
+            let bigString = "<p><i>#" + (i+1) + ".  " + q + ":   <i>";
+            bigString += "<b>" + a + "<b></p>";
+            document.querySelector("#content").innerHTML += bigString;
+        }		
+	}
+
+ </script>
+  
+  
+</head>
+<body>
+    
+    <span>Song Search: <input id="search" type="text" placeholder="SongSearch" value="Type Song Name Here"/></span>
+    
+    <input id="submit" type="Submit" value="Search" />
+    
+    <p id="content">???</p>
+
+</body>
+</html>

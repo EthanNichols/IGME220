@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+        button {
+            position: absolute;
+            color: red;
+            font-weight: bold;
+            height: 30px;
+            width: 130px;
+            z-index: 100;
+        }
+        #worldZoomButton {
+            top: 70px;
+            left: 10px;
+        }
+        #defaultZoomButton {
+            top: 110px;
+            left: 10px;
+        }
+        #buildingZoomButton {
+            top: 150px;
+            left: 10px;
+        }
+    </style>
+      
+      <script src="coffee-data.js"></script>
+  </head>
+  <body>
+    <div id="map"></div>
+      <p><button id="worldZoomButton">World Zoom (1)</button></p>
+      <p><button id="defaultZoomButton">Default Zoom (16)</button></p>
+      <p><button id="buildingZoomButton">Building Zoom (20)</button></p>
+    <script>
+      var map;
+        var infowindow;
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 43.083848, lng: -77.6799},
+          zoom: 16,
+            mapTypeID: google.maps.MapTypeId.ROADMAP
+        });
+          //map = new google.maps.Map(document.querySelector('#map'), mapOptions);
+          
+          for (let i=0; i<coffeeShops.length; i++) {
+              let shop = coffeeShops[i];
+              addMarker(shop.latitude, shop.longitude, shop.title);
+          }
+          
+          map.mapTypeID = 'satellite';
+          map.setTilt(45);
+      }
+        
+        function addMarker(latitude, longitude, title) {
+            let position = {lat: latitude, lng: longitude};
+            let marker = new google.maps.Marker({position: position, map:map});
+            marker.setTitle(title);
+            
+            google.maps.event.addListener(marker, 'click', function(e) {
+                makeInfoWindow(this.position, this.title);
+            });
+        }
+        
+        function makeInfoWindow(position, msg) {
+            if (infowindow) infowindow.close();
+            
+            infowindow = new google.maps.InfoWindow({
+                map: map,
+                position: position,
+                content: "<b>" + msg + "</b>"
+            });
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRvcijYcvQYQx1Eze6ioqeX8hUMkrr7h8&callback=initMap"
+    async defer></script>
+      
+      <script>
+      document.querySelector("#worldZoomButton").onclick = function() {
+          map.setZoom(1);
+      };
+        document.querySelector("#defaultZoomButton").onclick = function() {
+          map.setZoom(16);
+      };
+        document.querySelector("#buildingZoomButton").onclick = function() {
+          map.setZoom(20);
+      };
+      </script>
+  </body>
+</html>

@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+ 	<title>Get Earthquakes -  DOM Injection Version</title>
+ 	<link href='https://fonts.googleapis.com/css?family=Audiowide' rel='stylesheet' type='text/css'>
+ 	<style>
+ 	*{
+ 		font-family:sans-serif;
+ 	}
+ 	
+ 	header{
+ 		background-color: crimson;
+ 		margin:0;
+ 		padding-left:5px;
+ 	}
+ 	
+ 	h1{
+ 		font-size:4.5em;
+ 		font-family: "Audiowide";
+ 		margin-top:0;
+ 		margin-bottom:0;
+ 		color:black;
+ 		letter-spacing:.025em;
+ 	}
+ 	
+ 	h2{
+ 		font-size:1.5em;
+ 		font-family: "Audiowide";
+ 		margin-top:0;
+ 		color:#eee;
+ 		letter-spacing:.04em;
+ 		white-space: nowrap;
+ 	}
+ 	
+ 	section>div{
+ 		background-color:#ccc;
+ 		margin:1em;
+ 		padding:.5em;
+ 	}
+        #map {
+            width: 600px;
+            height: 400px;
+        }
+ 	</style>
+
+  <script>
+  	"use strict";
+	var URL = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&callback=jsonLoaded&jsonerror=true&eventtype=earthquake&minmagnitude=1.0&orderby=magnitude";
+	var GOLISANO_HALL = {
+		latitude:43.084156,
+		longitude:-77.67514
+	};
+	window.onload = init;
+	
+	function init(){
+		document.querySelector("#search").onclick = search;
+	}
+	
+	// MY FUNCTIONS
+	function search(){
+        
+        removeMarkers();
+        map.setZoom(1);
+        
+		// today's date
+		var now = new Date();
+		var nowYear = now.getFullYear();
+		var nowMonth = now.getMonth()+1;
+		var nowDate = now.getDate();
+	
+		// yesterday's date
+		var lastWeek = new Date();
+		lastWeek.setDate(lastWeek.getDate() - 7);
+		var lastWeekYear = lastWeek.getFullYear();
+		var lastWeekMonth = lastWeek.getMonth()+1;
+		var lastWeekDate = lastWeek.getDate();
+		
+		// build url
+		
+		var url = URL;
+		url += "&latitude=" + GOLISANO_HALL.latitude;
+		url += "&longitude=" + GOLISANO_HALL.longitude;
+		url += "&maxradiuskm=" + document.querySelector("#distance").value;
+		
+		// starttime=2016-01-01&endtime=2016-01-02
+		url += "&starttime=" + lastWeekYear + "-" + lastWeekMonth + "-" + lastWeekDate;
+		url += "&endtime=" + nowYear + "-" + nowMonth + "-" + nowDate;
+		document.querySelector('#status').innerHTML = "<i>Status: Search Initiated!</i>";
+		document.querySelector("#results").innerHTML = "???";
+		
+		// create <script> element and add to page
+		var script = document.createElement('script');
+		script.setAttribute('src',url);
+		script.setAttribute('id','tempScript');
+		document.querySelector('head').appendChild(script);
+
+		console.log("loading: " + url);
+	}
+	
+
+	function jsonLoaded(xhr){
+		console.log("obj stringified = " + JSON.stringify(xhr));
+		
+		// get rid of <script> tag we made for this request
+		var scriptTag = document.querySelector('#tempScript');
+		document.querySelector('head').removeChild(scriptTag);
+		
+		// bail out if there is an error
+		if (xhr.metadata.status == "400"){
+			document.querySelector('#status').innerHTML = "<i>Error! " + xhr.metadata.error + "<i>";
+			return;
+		}
+		
+		var count = xhr.metadata.count;
+		document.querySelector('#status').innerHTML = "<i>" + count + " earthquakes found!<i>";
+		
+		// bail out if there are no results
+		if(!count) return;
+		
+		//  build up a list of the results
+		var earthquakes = xhr.features;
+		var bigString = "<section>";
+		earthquakes.forEach(function(obj){
+			var properties = obj.properties;
+			var title = properties.title;
+			var url = properties.url;
+			var longitude = obj.geometry.coordinates[0];
+			var latitude = obj.geometry.coordinates[1];
+			
+			bigString += "<div>";
+			bigString += "<h4>" + title + " (" + latitude + ", " + longitude + ")</h4>";
+			bigString += "<p><a target='_blank' href='" + url + "'>" + url + "</a></p>";
+			bigString += "</div>";
+            
+            addMarker(latitude, longitude, title);
+		});
+		bigString += "</section>";
+		document.querySelector("#results").innerHTML = bigString;
+      }
+
+      let map;
+      let markers = [];
+      let infowindow;
+      function initMap() {
+        map = new google.maps.Map(document.querySelector('#map'), {
+          center: {lat: 43.083848, lng: -77.6799},
+          zoom: 1,
+            mapTypeID: google.maps.MapTypeId.ROADMAP
+        });
+      }
+        
+        function addMarker(latitude, longitude, title) {
+            let position = {lat: latitude, lng: longitude};
+            let marker = new google.maps.Marker({position: position, map:map});
+            marker.setTitle(title);
+            
+            google.maps.event.addListener(marker, 'click', function(e) {
+                makeInfoWindow(this.position, this.title);
+            });
+            
+            markers.push(marker);
+        }
+        
+        function makeInfoWindow(position, msg) {
+            if (infowindow) infowindow.close();
+            
+            infowindow = new google.maps.InfoWindow({
+                map: map,
+                position: position,
+                content: "<b>" + msg + "</b>"
+            });
+        }
+      
+      function removeMarkers() {
+          if (infowindow) infowindow.close();
+          
+          for (let i=0; i<markers.length; i++) {
+              markers[i].setMap(null);
+          }
+          
+          markers = [];
+      }
+ </script>
+  
+  
+</head>
+<body>
+<header>
+ <h1>QuākFndr</h1>
+ <h2>The earthquake reporting tool you can trust&reg;</h2>
+</header>
+ 	<p>We're going to look for magnitude 1.0+ earthquakes that happened near RIT's Golisano hall in the last week!</p>
+ 	<p><i><small>(Here we are using DOM Injection to fetch JSONP from the <a href="http://earthquake.usgs.gov/fdsnws/event/1/">USGS Earthquake Catalog.</a>)</small></i></p>
+ 	<hr>
+	<p id='status'><i>Status: Ready to search!</i></p>
+	<p>
+		<button id="search">Search!</button> &nbsp;&nbsp;How close by? --> 
+		<select id="distance">
+			<option value="200">200km</option>
+			<option value="400">400km</option>
+			<option value="600">600km</option>
+			<option value="800">800km</option>
+			<option selected value="1000">1000km</option>
+			<option value="2000">2000km</option>
+			<option value="5000">5000km</option>
+		</select>
+	</p>
+	<hr>
+	<h3>Results:</h3>
+	<p id="results">???</p>
+    <div id="map"></div>
+    
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRvcijYcvQYQx1Eze6ioqeX8hUMkrr7h8&callback=initMap"
+    async defer></script>
+</body>
+</html>
